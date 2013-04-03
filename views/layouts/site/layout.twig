@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title '' %} - My Silex Application</title>
+    <meta charset="UTF-8">
+    {% block stylesheet %}
+        <link rel="stylesheet" media="screen" href="{{ app.request.basepath }}/css/bootstrap.css">
+        <link rel="stylesheet" media="screen" href="{{ app.request.basepath }}/css/bootstrap-responsive.css">
+        <link rel="stylesheet" media="screen" href="{{ app.request.basepath }}/css/style.css">
+    {% endblock %}
+</head>
+<body>
+{% block content %}{% endblock %}
+{% block javascript %}
+    <script src="{{ app.request.basepath }}/js/jquery-1.9.1.min.js"></script>
+    <script src="{{ app.request.basepath }}/js/bootstrap.js"></script>
+{% endblock %}
+</body>
+</html>
