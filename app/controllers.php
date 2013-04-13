@@ -27,6 +27,15 @@ $app->get('/api/texts', function () use ($app) {
 })
 ->bind('texts');
 
+$app->match('/api/texts/create/{id}/{text}', function ($id,$text) use ($app) {
+    //Création d'un nouveau pad
+    $json_url = file_get_contents('http://biloupad.bilou.net/api/1/createPad?apikey=ynDc83D1wQa8YEoLVYpOnghaGEkSJkad&padID='.$id);
+    $json_url = file_get_contents("http://biloupad.bilou.net/api/1/setText?apikey=ynDc83D1wQa8YEoLVYpOnghaGEkSJkad&padID=".$id."&text=".$text);
+
+    return true;
+})
+->bind('textscreate');
+
 $app->get('/api/texts/trans', function () use ($app) {
 
     $code = file_get_contents('http://biloupad.bilou.net/api/1.2.7/listAllPads?apikey=ynDc83D1wQa8YEoLVYpOnghaGEkSJkad');
