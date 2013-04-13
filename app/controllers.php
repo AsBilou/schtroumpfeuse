@@ -13,7 +13,7 @@ $app->get('/', function () use ($app) {
 
 $app->get('/api/texts', function () use ($app) {
 
-    $code = file_get_contents('http://10.40.75.150:9001/api/1.2.7/listAllPads?apikey=Kobtnw4ZwOD3ztsO5Zv764so4CMe8yFk');
+    $code = file_get_contents('http://biloupad.bilou.net/api/1.2.7/listAllPads?apikey=ynDc83D1wQa8YEoLVYpOnghaGEkSJkad');
     $data = json_decode($code, TRUE);
     $n=0;
     $json='{"pad":{';
@@ -29,15 +29,26 @@ $app->get('/api/texts', function () use ($app) {
 
 $app->get('/api/texts/trans', function () use ($app) {
 
-
-
-    return 'hello';
+    $code = file_get_contents('http://biloupad.bilou.net/api/1.2.7/listAllPads?apikey=ynDc83D1wQa8YEoLVYpOnghaGEkSJkad');
+    $data = json_decode($code, TRUE);
+    $n=0;
+    $json='{"pad":{';
+    foreach ($data['data']['padIDs'] as $name){
+        $nameExplode = explode('-',$name);
+        if($nameExplode[0]=='trans'){
+        $json.= '"name":"'.$name.'",';
+        $n++;
+        }
+    }
+    $json=substr_replace($json ,"",-1);
+    $json.='}';
+    return $json;
 })
 ->bind('textstranslist');
 
 $app->get('/api/texts/{id}', function ($id) use ($app) {
 
-    $json_url = "http://10.40.75.150:9001/api/1/getText?apikey=Kobtnw4ZwOD3ztsO5Zv764so4CMe8yFk&padID=".$id;
+    $json_url = "http://biloupad.bilou.net/api/1/getText?apikey=ynDc83D1wQa8YEoLVYpOnghaGEkSJkad&padID=".$id;
     $json = file_get_contents($json_url);
 
 
@@ -45,19 +56,55 @@ $app->get('/api/texts/{id}', function ($id) use ($app) {
 })
 ->bind('textspad');
 
-$app->get('/api/texts/{id}/original/{mots}', function () use ($app) {
+$app->get('/api/texts/{id}/original/{mot}', function () use ($app) {
 
+    function regHex($word, $mot){
+        if (preg_match("/er$|ir$/", $word)) {
+            return $mot;
+        } else {
+            return $word;
+        }
+    }
 
+    $json_url = file_get_contents('http://biloupad.bilou.net/api/1/getText?apikey=ynDc83D1wQa8YEoLVYpOnghaGEkSJkad&padID='.$id);
+    $data = json_decode($json_url,TRUE);
+    $explode = explode(' ', $data['data']['text']);
+    $text = '';
+    foreach($explode as $word){
+        $word = regHex($word, $mot);
+        $text .= $word.'%20';
+    }
 
-    return 'hello';
+    //Création d'un nouveau pad
+    $json_url = file_get_contents("http://biloupad.bilou.net/api/1/setText?apikey=ynDc83D1wQa8YEoLVYpOnghaGEkSJkad&padID=".$id."&text=".$text);
+
+    return true;
 })
 ->bind('textsoriginal');
 
-$app->get('/api/texts/{id}/trans/{mots}', function () use ($app) {
+$app->get('/api/texts/{id}/trans/{mot}', function ($id,$mot) use ($app) {
+    function regHex($word, $mot){
+        if (preg_match("/er$|ir$/", $word)) {
+            return $mot;
+        } else {
+            return $word;
+        }
+    }
 
+    $json_url = file_get_contents('http://biloupad.bilou.net/api/1/getText?apikey=ynDc83D1wQa8YEoLVYpOnghaGEkSJkad&padID='.$id);
+    $data = json_decode($json_url,TRUE);
+    $explode = explode(' ', $data['data']['text']);
+    $text = '';
+    foreach($explode as $word){
+        $word = regHex($word, $mot);
+            $text .= $word.'%20';
+    }
+    $namePAd = 'trans-'.$mot.'_'.$id;
+    //Création d'un nouveau pad
+    $json_url = file_get_contents('http://biloupad.bilou.net/api/1/createPad?apikey=ynDc83D1wQa8YEoLVYpOnghaGEkSJkad&padID='.$namePAd);
+    $json_url = file_get_contents("http://biloupad.bilou.net/api/1/setText?apikey=ynDc83D1wQa8YEoLVYpOnghaGEkSJkad&padID=".$namePAd."&text=".$text);
 
-
-    return 'hello';
+    return true;
 })
 ->bind('textstrans');
 
