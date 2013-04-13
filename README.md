@@ -1,4 +1,4 @@
-Silex_Skeleton V1.0
+Documentation
 ==============
 
-Archetype for basic web site whit silex and propel
+https://github.com/AsBilou/schtroumpfeuse/wiki
